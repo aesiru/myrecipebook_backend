@@ -4,6 +4,7 @@ from .serializers import RecipeSerializer, IngredientSerializer, HaveSerializer
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()           
+    
     serializer_class = RecipeSerializer           
 
 class IngredientViewSet(viewsets.ModelViewSet):
