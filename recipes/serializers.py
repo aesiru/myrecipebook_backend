@@ -16,13 +16,13 @@ class RecipeSerializer(serializers.ModelSerializer):
             {
                 'ingredient': IngredientSerializer(have.ingredient).data,
                 'quantity': have.quantity
-            }
+            }   
             for have in have_relationships
         ]
     
     def create(self, validated_data):
         # Handle ingredients if they're passed in the request
-        ingredients_data = validated_data.pop('ingredients', [])
+        ingredients_data = self.initial_data.get('ingredients', [])
         recipe = Recipe.objects.create(**validated_data)
         
         for ingredient_data in ingredients_data:
@@ -31,7 +31,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                 name=ingredient_data['name'],
                 # Only include measure and unit if they exist in your Ingredient model
                 defaults={
-                    'measure': ingredient_data.get('measure', ''),
                     'unit': ingredient_data.get('unit', ''),
                 }
             )
@@ -39,7 +38,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             Have.objects.create(
                 recipe=recipe, 
                 ingredient=ingredient, 
-                quantity=ingredient_data.get('quantity', 1)  # Use 'quantity' not 'measure'
+                quantity=ingredient_data.get('quantity', 0 )  # Use 'quantity' not 'measure'
             )
         return recipe
 
